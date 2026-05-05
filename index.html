@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sunbot – Ảnh & Đánh giá cuối năm</title>
+
+<style>
+  :root {
+    --orange: #ff7a00;
+    --dark: #1f2937;
+    --muted: #6b7280;
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --border: #e5e7eb;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    padding: 14px;
+  }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 22px;
+    margin: 8px 0 4px;
+  }
+
+  .sub {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin: 10px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  }
+
+  label {
+    display: block;
+    font-weight: 700;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+
+  select,
+  input,
+  textarea,
+  button {
+    width: 100%;
+    padding: 11px 12px;
+    margin-top: 6px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    font-size: 16px;
+    background: #fff;
+  }
+
+  textarea {
+    min-height: 64px;
+    resize: vertical;
+  }
+
+  button {
+    border: none;
+    background: var(--orange);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  button.secondary {
+    background: #374151;
+  }
+
+  button.ghost {
+    background: #fff;
+    color: var(--dark);
+    border: 1px solid var(--border);
+  }
+
+  button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+
+  .modeGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .modeBtn {
+    background: #fff;
+    color: var(--dark);
+    border: 1px solid var(--border);
+  }
+
+  .modeBtn.active {
+    background: var(--orange);
+    color: #fff;
+    border-color: var(--orange);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  @media(max-width: 620px) {
+    .row,
+    .modeGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #fff3e6;
+    color: #9a4b00;
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  .criteriaBox {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 12px;
+    background: #fafafa;
+  }
+
+  .criteriaTitle {
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .levels {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .levelBtn {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--dark);
+    padding: 12px 0;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  .levelBtn.active {
+    background: var(--orange);
+    color: #fff;
+    border-color: var(--orange);
+  }
+
+  #preview {
+    width: 100%;
+    max-height: 360px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #fafafa;
+  }
+
+  .status {
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-size: 14px;
+    display: none;
+  }
+
+  .status.ok {
+    display: block;
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .status.err {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .small {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <h1>Sunbot – Ảnh & Đánh giá cuối năm</h1>
+  <div class="sub">Một app, hai chế độ: bổ sung ảnh cá nhân hoặc đánh giá 3 tiêu chí.</div>
+
+  <div class="card">
+    <b>0. Chọn chế độ</b>
+    <div class="modeGrid">
+      <button type="button" id="photoModeBtn" class="modeBtn active" onclick="setMode('photo')">Bổ sung ảnh cá nhân</button>
+      <button type="button" id="evalModeBtn" class="modeBtn" onclick="setMode('evaluation')">Đánh giá cuối năm</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <b>1. Chọn trẻ</b>
+
+    <div class="row">
+      <div>
+        <label>Trường</label>
+        <select id="school"></select>
+      </div>
+
+      <div>
+        <label>Lớp</label>
+        <select id="className"></select>
+      </div>
+    </div>
+
+    <label>Tìm tên trẻ</label>
+    <input id="search" placeholder="Gõ vài chữ trong tên trẻ..." />
+
+    <label>Trẻ</label>
+    <select id="student"></select>
+
+    <div id="selectedInfo" class="pill">Chưa chọn trẻ</div>
+    <div id="ageInfo" class="small"></div>
+  </div>
+
+  <div class="card">
+    <b id="imageTitle">2. Ảnh cá nhân</b>
+
+    <div class="small">
+      Có thể chụp ảnh mới hoặc chọn ảnh từ bộ sưu tập. Ảnh sẽ được nén khoảng dưới 200KB trước khi lưu.
+    </div>
+
+    <input type="file" accept="image/*" id="camera" />
+
+    <div style="margin-top:10px;">
+      <img id="preview" alt="Ảnh preview" style="display:none;" />
+    </div>
+
+    <div id="imageInfo" class="small"></div>
+
+    <button class="ghost" type="button" onclick="clearImage()">Xóa ảnh chọn lại</button>
+  </div>
+
+  <div id="evaluationPanel" class="hidden">
+
+    <div class="card">
+      <b>3. Thông tin đánh giá</b>
+
+      <label>Chặng</label>
+      <input id="stage" placeholder="Ví dụ: Cuối năm 2025-2026" />
+
+      <label>Bối cảnh quan sát</label>
+      <select id="context">
+        <option value="Robot">Robot</option>
+        <option value="STEAM">STEAM</option>
+        <option value="Ngày hội">Ngày hội</option>
+        <option value="Hoạt động nhóm">Hoạt động nhóm</option>
+        <option value="Check cuối năm">Check cuối năm</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <b>4. Tiêu chí đánh giá</b>
+
+      <div class="criteriaBox" data-criteria="problem">
+        <div class="criteriaTitle">Tiêu chí 1 – Thử sai và giải quyết vấn đề</div>
+        <div class="small">Bắt buộc. Lõi STEAM của Sunbot.</div>
+
+        <div class="levels">
+          <button type="button" class="levelBtn" data-box="problem" data-level="1">1</button>
+          <button type="button" class="levelBtn" data-box="problem" data-level="2">2</button>
+          <button type="button" class="levelBtn" data-box="problem" data-level="3">3</button>
+          <button type="button" class="levelBtn" data-box="problem" data-level="4">4</button>
+        </div>
+
+        <label>Biểu hiện quan sát được</label>
+        <select id="problemBehavior"></select>
+        <textarea id="problemCustom" placeholder="Có thể sửa/thêm chi tiết nếu cần..."></textarea>
+      </div>
+
+      <div class="criteriaBox" data-criteria="team">
+        <div class="criteriaTitle">Tiêu chí 2 – Hợp tác và giao tiếp</div>
+        <div class="small">Bắt buộc. Lõi phát triển xã hội trong mầm non.</div>
+
+        <div class="levels">
+          <button type="button" class="levelBtn" data-box="team" data-level="1">1</button>
+          <button type="button" class="levelBtn" data-box="team" data-level="2">2</button>
+          <button type="button" class="levelBtn" data-box="team" data-level="3">3</button>
+          <button type="button" class="levelBtn" data-box="team" data-level="4">4</button>
+        </div>
+
+        <label>Biểu hiện quan sát được</label>
+        <select id="teamBehavior"></select>
+        <textarea id="teamCustom" placeholder="Có thể sửa/thêm chi tiết nếu cần..."></textarea>
+      </div>
+
+      <div class="criteriaBox" data-criteria="highlight">
+        <div class="criteriaTitle">Tiêu chí 3 – Điểm nổi bật Sunbot</div>
+        <div class="small">Chọn 1 năng lực nổi bật nhất của trẻ.</div>
+
+        <label>Chọn điểm nổi bật</label>
+        <select id="highlightIndicator">
+          <option value="ROB-SEQ-01">Tư duy trình tự và điều hướng</option>
+          <option value="EXPLORE-01">Quan sát và khám phá</option>
+          <option value="CREATE-01">Sáng tạo và tạo sản phẩm</option>
+          <option value="CONF-01">Tự tin và biểu đạt</option>
+        </select>
+
+        <div class="levels">
+          <button type="button" class="levelBtn" data-box="highlight" data-level="1">1</button>
+          <button type="button" class="levelBtn" data-box="highlight" data-level="2">2</button>
+          <button type="button" class="levelBtn" data-box="highlight" data-level="3">3</button>
+          <button type="button" class="levelBtn" data-box="highlight" data-level="4">4</button>
+        </div>
+
+        <label>Biểu hiện quan sát được</label>
+        <select id="highlightBehavior"></select>
+        <textarea id="highlightCustom" placeholder="Có thể sửa/thêm chi tiết nếu cần..."></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <label>Giáo viên</label>
+    <input id="teacher" placeholder="Tên giáo viên" />
+
+    <button id="submitBtn" onclick="submitData()">LƯU ẢNH</button>
+    <button class="secondary" type="button" onclick="resetFormKeepClass()">Làm trẻ tiếp theo</button>
+    <div id="status" class="status"></div>
+  </div>
+
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbwdcuOxY4TWzEEOil4lOXUcG27l04c3RdD36bqVjIPu1LEv11YmvZge0Nakb5lpgsG2/exec';
+const TARGET_IMAGE_KB = 200;
+
+const CRITERIA = {
+  problem: {
+    code: 'PROBLEM-01',
+    name: 'Thử sai và giải quyết vấn đề',
+    behaviors: [
+      'Con còn cần cô hỗ trợ nhiều khi nhiệm vụ gặp khó.',
+      'Con bắt đầu thử lại khi có cô hoặc bạn gợi ý.',
+      'Con biết thử lại và điều chỉnh cách làm sau khi quan sát kết quả.',
+      'Con chủ động phát hiện vấn đề, thử cách khác và chia sẻ cách làm.'
+    ]
+  },
+  team: {
+    code: 'TEAM-01',
+    name: 'Hợp tác và giao tiếp',
+    behaviors: [
+      'Con còn cần cô hỗ trợ để chờ lượt và tham gia cùng nhóm.',
+      'Con đã tham gia cùng nhóm khi có cô hướng dẫn.',
+      'Con biết chờ lượt, trao đổi và phối hợp với bạn trong nhiệm vụ.',
+      'Con chủ động hỗ trợ bạn, chia sẻ ý tưởng và phối hợp tích cực.'
+    ]
+  },
+  highlights: {
+    'ROB-SEQ-01': {
+      name: 'Tư duy trình tự và điều hướng',
+      behaviors: [
+        'Con nhận biết hướng đi đơn giản khi có cô hỗ trợ.',
+        'Con thực hiện được một số bước điều hướng theo gợi ý.',
+        'Con biết sắp xếp bước đi/lệnh đơn giản để hoàn thành nhiệm vụ.',
+        'Con chủ động điều chỉnh đường đi và giải thích ngắn cách thực hiện.'
+      ]
+    },
+    'EXPLORE-01': {
+      name: 'Quan sát và khám phá',
+      behaviors: [
+        'Con cần cô gợi mở để chú ý đến đặc điểm của vật liệu/hiện tượng.',
+        'Con bắt đầu nhận ra một số đặc điểm khi được hướng dẫn.',
+        'Con biết quan sát, so sánh và nói về đặc điểm nổi bật.',
+        'Con chủ động đặt câu hỏi hoặc nêu phát hiện của mình.'
+      ]
+    },
+    'CREATE-01': {
+      name: 'Sáng tạo và tạo sản phẩm',
+      behaviors: [
+        'Con còn cần cô hỗ trợ nhiều để hoàn thiện sản phẩm.',
+        'Con tham gia tạo sản phẩm theo hướng dẫn.',
+        'Con biết lựa chọn/cải tiến một số chi tiết trong sản phẩm.',
+        'Con có ý tưởng riêng và thể hiện sự sáng tạo rõ trong sản phẩm.'
+      ]
+    },
+    'CONF-01': {
+      name: 'Tự tin và biểu đạt',
+      behaviors: [
+        'Con còn rụt rè khi chia sẻ hoặc tham gia thử thách.',
+        'Con bắt đầu tham gia khi được cô động viên.',
+        'Con tự tin nói về việc mình làm hoặc sản phẩm của mình.',
+        'Con chủ động trình bày, thể hiện sự hào hứng và tự tin.'
+      ]
+    }
+  }
+};
+
+let mode = 'photo';
+let DATA = {};
+let levels = { problem: '', team: '', highlight: '' };
+let imageBase64 = '';
+let imageKb = 0;
+let currentStudents = [];
+
+async function init() {
+  setStatus('Đang tải dữ liệu...', 'ok');
+
+  try {
+    const res = await fetch(API_URL + '?action=data');
+    const json = await res.json();
+
+    if (!json.ok) throw new Error(json.error || 'Không tải được dữ liệu');
+
+    DATA = json.enrollment || {};
+
+    document.getElementById('stage').value =
+      (json.config && json.config.defaultStage) || 'Cuối năm 2025-2026';
+
+    initBehaviorOptions();
+    loadSchools();
+    restoreLastContext();
+    setMode('photo');
+    clearStatus();
+
+  } catch (err) {
+    setStatus('Lỗi tải dữ liệu: ' + err.message, 'err');
+  }
+}
+
+function setMode(newMode) {
+  mode = newMode;
+
+  document.getElementById('photoModeBtn').classList.toggle('active', mode === 'photo');
+  document.getElementById('evalModeBtn').classList.toggle('active', mode === 'evaluation');
+
+  document.getElementById('evaluationPanel').classList.toggle('hidden', mode !== 'evaluation');
+
+  document.getElementById('submitBtn').innerText =
+    mode === 'photo' ? 'LƯU ẢNH CÁ NHÂN' : 'LƯU ĐÁNH GIÁ 3 TIÊU CHÍ';
+
+  document.getElementById('imageTitle').innerText =
+    mode === 'photo' ? '2. Ảnh cá nhân' : '2. Ảnh cá nhân nếu muốn bổ sung/thay thế';
+
+  clearStatus();
+}
+
+function initBehaviorOptions() {
+  fillSelect('problemBehavior', CRITERIA.problem.behaviors);
+  fillSelect('teamBehavior', CRITERIA.team.behaviors);
+  updateHighlightBehavior();
+}
+
+function fillSelect(id, items) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+
+  items.forEach(text => {
+    el.appendChild(new Option(text, text));
+  });
+}
+
+function updateHighlightBehavior() {
+  const code = document.getElementById('highlightIndicator').value;
+  fillSelect('highlightBehavior', CRITERIA.highlights[code].behaviors);
+}
+
+function loadSchools() {
+  const el = document.getElementById('school');
+  el.innerHTML = '';
+
+  Object.keys(DATA)
+    .sort((a, b) => a.localeCompare(b, 'vi'))
+    .forEach(school => el.appendChild(new Option(school, school)));
+
+  loadClasses();
+}
+
+function loadClasses() {
+  const school = document.getElementById('school').value;
+  localStorage.setItem('sunbot_school', school || '');
+
+  const el = document.getElementById('className');
+  el.innerHTML = '';
+
+  if (!school || !DATA[school]) return;
+
+  Object.keys(DATA[school])
+    .sort((a, b) => a.localeCompare(b, 'vi'))
+    .forEach(cls => el.appendChild(new Option(cls, cls)));
+
+  loadStudents();
+}
+
+function loadStudents() {
+  const school = document.getElementById('school').value;
+  const cls = document.getElementById('className').value;
+
+  localStorage.setItem('sunbot_class', cls || '');
+
+  currentStudents =
+    school && cls && DATA[school] && DATA[school][cls]
+      ? DATA[school][cls]
+      : [];
+
+  renderStudents(currentStudents);
+}
+
+function renderStudents(list) {
+  const el = document.getElementById('student');
+  el.innerHTML = '';
+
+  list.forEach(st => {
+    const opt = new Option(`${st.name} (${st.child_id})`, st.child_id);
+    opt.dataset.enrollmentId = st.enrollment_id || '';
+    opt.dataset.name = st.name || '';
+    opt.dataset.ageGroup = st.age_group || 'NA';
+    el.appendChild(opt);
+  });
+
+  updateSelectedInfo();
+}
+
+function updateSelectedInfo() {
+  const el = document.getElementById('student');
+  const opt = el.options[el.selectedIndex];
+
+  if (!opt) {
+    document.getElementById('selectedInfo').innerText = 'Chưa chọn trẻ';
+    document.getElementById('ageInfo').innerText = '';
+    return;
+  }
+
+  document.getElementById('selectedInfo').innerText =
+    `Đang chọn: ${opt.dataset.name || ''} – ${opt.value}`;
+
+  document.getElementById('ageInfo').innerText =
+    `Khối tuổi Sunbot: ${opt.dataset.ageGroup || 'NA'}`;
+}
+
+function restoreLastContext() {
+  const school = localStorage.getItem('sunbot_school');
+  const cls = localStorage.getItem('sunbot_class');
+  const teacher = localStorage.getItem('sunbot_teacher');
+
+  if (teacher) document.getElementById('teacher').value = teacher;
+
+  if (school && DATA[school]) {
+    document.getElementById('school').value = school;
+    loadClasses();
+
+    if (cls && DATA[school][cls]) {
+      document.getElementById('className').value = cls;
+      loadStudents();
+    }
+  }
+}
+
+document.getElementById('school').addEventListener('change', loadClasses);
+document.getElementById('className').addEventListener('change', loadStudents);
+document.getElementById('student').addEventListener('change', updateSelectedInfo);
+document.getElementById('highlightIndicator').addEventListener('change', updateHighlightBehavior);
+
+document.getElementById('search').addEventListener('input', function() {
+  const keyword = this.value.toLowerCase().trim();
+
+  const filtered = keyword
+    ? currentStudents.filter(s =>
+        (s.name || '').toLowerCase().includes(keyword) ||
+        (s.child_id || '').toLowerCase().includes(keyword)
+      )
+    : currentStudents;
+
+  renderStudents(filtered);
+});
+
+document.querySelectorAll('.levelBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const box = btn.dataset.box;
+    levels[box] = btn.dataset.level;
+
+    document
+      .querySelectorAll(`.levelBtn[data-box="${box}"]`)
+      .forEach(b => b.classList.remove('active'));
+
+    btn.classList.add('active');
+  });
+});
+
+document.getElementById('camera').addEventListener('change', async function(e) {
+  const file = e.target.files && e.target.files[0];
+
+  if (!file) return;
+
+  setStatus('Đang xử lý ảnh...', 'ok');
+
+  try {
+    const compressed = await compressImageToTarget(file, TARGET_IMAGE_KB);
+
+    imageBase64 = compressed.base64;
+    imageKb = compressed.kb;
+
+    const preview = document.getElementById('preview');
+    preview.src = imageBase64;
+    preview.style.display = 'block';
+
+    document.getElementById('imageInfo').innerText =
+      `Ảnh đã nén: khoảng ${imageKb}KB`;
+
+    clearStatus();
+
+  } catch (err) {
+    setStatus('Lỗi xử lý ảnh: ' + err.message, 'err');
+  }
+});
+
+async function compressImageToTarget(file, targetKb) {
+  const img = await loadImage(file);
+
+  let maxWidth = 900;
+  let quality = 0.78;
+  let result = '';
+  let kb = Infinity;
+
+  for (let i = 0; i < 8; i++) {
+    result = drawCompressed(img, maxWidth, quality);
+    kb = Math.round((result.length * 3 / 4) / 1024);
+
+    if (kb <= targetKb) break;
+
+    if (quality > 0.5) {
+      quality -= 0.1;
+    } else {
+      maxWidth = Math.round(maxWidth * 0.82);
+    }
+  }
+
+  return { base64: result, kb };
+}
+
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function drawCompressed(img, maxWidth, quality) {
+  const ratio = Math.min(1, maxWidth / img.width);
+  const width = Math.round(img.width * ratio);
+  const height = Math.round(img.height * ratio);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, width, height);
+
+  return canvas.toDataURL('image/jpeg', quality);
+}
+
+function clearImage() {
+  imageBase64 = '';
+  imageKb = 0;
+
+  document.getElementById('camera').value = '';
+  document.getElementById('preview').src = '';
+  document.getElementById('preview').style.display = 'none';
+  document.getElementById('imageInfo').innerText = '';
+}
+
+function buildObservations() {
+  const highlightCode = document.getElementById('highlightIndicator').value;
+  const highlightName = CRITERIA.highlights[highlightCode].name;
+
+  const problemBehavior =
+    document.getElementById('problemCustom').value.trim() ||
+    document.getElementById('problemBehavior').value;
+
+  const teamBehavior =
+    document.getElementById('teamCustom').value.trim() ||
+    document.getElementById('teamBehavior').value;
+
+  const highlightBehavior =
+    document.getElementById('highlightCustom').value.trim() ||
+    document.getElementById('highlightBehavior').value;
+
+  return [
+    {
+      indicator_code: CRITERIA.problem.code,
+      indicator_name: CRITERIA.problem.name,
+      level: levels.problem,
+      behavior: problemBehavior
+    },
+    {
+      indicator_code: CRITERIA.team.code,
+      indicator_name: CRITERIA.team.name,
+      level: levels.team,
+      behavior: teamBehavior
+    },
+    {
+      indicator_code: highlightCode,
+      indicator_name: highlightName,
+      level: levels.highlight,
+      behavior: highlightBehavior
+    }
+  ];
+}
+
+async function submitData() {
+  if (mode === 'photo') {
+    return submitPhoto();
+  }
+
+  return submitEvaluation();
+}
+
+async function submitPhoto() {
+  const submitBtn = document.getElementById('submitBtn');
+
+  const studentEl = document.getElementById('student');
+  const selectedOpt = studentEl.options[studentEl.selectedIndex];
+
+  const childId = studentEl.value;
+  const enrollmentId = selectedOpt ? selectedOpt.dataset.enrollmentId : '';
+  const teacher = document.getElementById('teacher').value.trim();
+
+  if (!childId) return alert('Chưa chọn trẻ');
+  if (!teacher) return alert('Chưa nhập tên giáo viên');
+  if (!imageBase64) return alert('Chưa chọn hoặc chụp ảnh');
+
+  const payload = {
+    action: 'save_photo',
+    child_id: childId,
+    enrollment_id: enrollmentId,
+    teacher: teacher,
+    image_base64: imageBase64
+  };
+
+  submitBtn.disabled = true;
+  setStatus('Đang lưu ảnh cá nhân...', 'ok');
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    const json = await res.json();
+
+    if (!json.ok) {
+      throw new Error(json.error || 'Không lưu được ảnh');
+    }
+
+    setStatus(`Đã lưu ảnh cá nhân. Mã ảnh: ${json.photo_id}`, 'ok');
+    localStorage.setItem('sunbot_teacher', teacher || '');
+
+  } catch (err) {
+    setStatus('Lỗi lưu ảnh: ' + err.message, 'err');
+
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
+
+async function submitEvaluation() {
+  const submitBtn = document.getElementById('submitBtn');
+
+  const studentEl = document.getElementById('student');
+  const selectedOpt = studentEl.options[studentEl.selectedIndex];
+
+  const childId = studentEl.value;
+  const enrollmentId = selectedOpt ? selectedOpt.dataset.enrollmentId : '';
+
+  const stage = document.getElementById('stage').value.trim();
+  const context = document.getElementById('context').value;
+  const teacher = document.getElementById('teacher').value.trim();
+
+  if (!childId) return alert('Chưa chọn trẻ');
+  if (!context) return alert('Chưa chọn bối cảnh quan sát');
+  if (!teacher) return alert('Chưa nhập tên giáo viên');
+
+  if (!levels.problem) return alert('Chưa chọn mức cho tiêu chí Thử sai và giải quyết vấn đề');
+  if (!levels.team) return alert('Chưa chọn mức cho tiêu chí Hợp tác và giao tiếp');
+  if (!levels.highlight) return alert('Chưa chọn mức cho tiêu chí Điểm nổi bật Sunbot');
+
+  const payload = {
+    action: 'save_observations',
+    child_id: childId,
+    enrollment_id: enrollmentId,
+    stage: stage,
+    context: context,
+    teacher: teacher,
+    image_base64: imageBase64,
+    observations: buildObservations()
+  };
+
+  submitBtn.disabled = true;
+  setStatus('Đang lưu đánh giá 3 tiêu chí...', 'ok');
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    const json = await res.json();
+
+    if (!json.ok) {
+      throw new Error(json.error || 'Không lưu được dữ liệu');
+    }
+
+    setStatus(`Đã lưu thành công ${json.saved_count} tiêu chí.`, 'ok');
+    localStorage.setItem('sunbot_teacher', teacher || '');
+
+  } catch (err) {
+    setStatus('Lỗi lưu đánh giá: ' + err.message, 'err');
+
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
+
+function resetFormKeepClass() {
+  document.getElementById('search').value = '';
+  loadStudents();
+
+  levels = { problem: '', team: '', highlight: '' };
+
+  document.querySelectorAll('.levelBtn').forEach(b => b.classList.remove('active'));
+
+  document.getElementById('problemCustom').value = '';
+  document.getElementById('teamCustom').value = '';
+  document.getElementById('highlightCustom').value = '';
+
+  clearImage();
+  clearStatus();
+}
+
+function setStatus(msg, type) {
+  const el = document.getElementById('status');
+  el.innerText = msg;
+  el.className = 'status ' + (type === 'err' ? 'err' : 'ok');
+}
+
+function clearStatus() {
+  const el = document.getElementById('status');
+  el.innerText = '';
+  el.className = 'status';
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
