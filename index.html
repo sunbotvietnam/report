@@ -15,9 +15,7 @@
     --border: #e5e7eb;
   }
 
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
 
   body {
     margin: 0;
@@ -27,21 +25,11 @@
     padding: 14px;
   }
 
-  .wrap {
-    max-width: 860px;
-    margin: 0 auto;
-  }
+  .wrap { max-width: 860px; margin: 0 auto; }
 
-  h1 {
-    font-size: 22px;
-    margin: 8px 0 4px;
-  }
+  h1 { font-size: 22px; margin: 8px 0 4px; }
 
-  .sub {
-    color: var(--muted);
-    font-size: 13px;
-    margin-bottom: 12px;
-  }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
 
   .card {
     background: var(--card);
@@ -52,17 +40,9 @@
     box-shadow: 0 2px 8px rgba(0,0,0,.04);
   }
 
-  label {
-    display: block;
-    font-weight: 700;
-    font-size: 13px;
-    margin-top: 10px;
-  }
+  label { display: block; font-weight: 700; font-size: 13px; margin-top: 10px; }
 
-  select,
-  input,
-  textarea,
-  button {
+  select, input, textarea, button {
     width: 100%;
     padding: 11px 12px;
     margin-top: 6px;
@@ -72,64 +52,19 @@
     background: #fff;
   }
 
-  textarea {
-    min-height: 64px;
-    resize: vertical;
-  }
+  textarea { min-height: 64px; resize: vertical; }
 
-  button {
-    border: none;
-    background: var(--orange);
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-  }
+  button { border: none; background: var(--orange); color: white; font-weight: 700; cursor: pointer; }
+  button.secondary { background: #374151; }
+  button.ghost { background: #fff; color: var(--dark); border: 1px solid var(--border); }
+  button:disabled { opacity: .55; cursor: not-allowed; }
 
-  button.secondary {
-    background: #374151;
-  }
+  .modeGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modeBtn { background: #fff; color: var(--dark); border: 1px solid var(--border); }
+  .modeBtn.active { background: var(--orange); color: #fff; border-color: var(--orange); }
 
-  button.ghost {
-    background: #fff;
-    color: var(--dark);
-    border: 1px solid var(--border);
-  }
-
-  button:disabled {
-    opacity: .55;
-    cursor: not-allowed;
-  }
-
-  .modeGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .modeBtn {
-    background: #fff;
-    color: var(--dark);
-    border: 1px solid var(--border);
-  }
-
-  .modeBtn.active {
-    background: var(--orange);
-    color: #fff;
-    border-color: var(--orange);
-  }
-
-  .row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  @media(max-width: 620px) {
-    .row,
-    .modeGrid {
-      grid-template-columns: 1fr;
-    }
-  }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media(max-width: 620px) { .row, .modeGrid { grid-template-columns: 1fr; } }
 
   .pill {
     display: inline-block;
@@ -149,32 +84,11 @@
     background: #fafafa;
   }
 
-  .criteriaTitle {
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
+  .criteriaTitle { font-weight: 700; margin-bottom: 6px; }
 
-  .levels {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-top: 8px;
-  }
-
-  .levelBtn {
-    border: 1px solid var(--border);
-    background: #fff;
-    color: var(--dark);
-    padding: 12px 0;
-    border-radius: 10px;
-    font-weight: 700;
-  }
-
-  .levelBtn.active {
-    background: var(--orange);
-    color: #fff;
-    border-color: var(--orange);
-  }
+  .levels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
+  .levelBtn { border: 1px solid var(--border); background: #fff; color: var(--dark); padding: 12px 0; border-radius: 10px; font-weight: 700; }
+  .levelBtn.active { background: var(--orange); color: #fff; border-color: var(--orange); }
 
   #preview {
     width: 100%;
@@ -185,33 +99,22 @@
     background: #fafafa;
   }
 
-  .status {
-    padding: 10px;
+  .status { padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 14px; display: none; }
+  .status.ok { display: block; background: #dcfce7; color: #166534; }
+  .status.err { display: block; background: #fee2e2; color: #991b1b; }
+
+  .small { font-size: 12px; color: var(--muted); }
+  .hidden { display: none; }
+
+  .save-warning {
+    margin-top: 8px;
+    padding: 9px 10px;
     border-radius: 10px;
-    margin-top: 10px;
-    font-size: 14px;
-    display: none;
-  }
-
-  .status.ok {
-    display: block;
-    background: #dcfce7;
-    color: #166534;
-  }
-
-  .status.err {
-    display: block;
-    background: #fee2e2;
-    color: #991b1b;
-  }
-
-  .small {
+    background: #fff7ed;
+    color: #9a4b00;
     font-size: 12px;
-    color: var(--muted);
-  }
-
-  .hidden {
-    display: none;
+    font-weight: 700;
+    line-height: 1.35;
   }
 </style>
 </head>
@@ -259,7 +162,7 @@
     <b id="imageTitle">2. Ảnh cá nhân</b>
 
     <div class="small">
-      Có thể chụp ảnh mới hoặc chọn ảnh từ bộ sưu tập. Ảnh sẽ được nén khoảng dưới 200KB trước khi lưu.
+      Có thể chụp ảnh mới hoặc chọn ảnh từ bộ sưu tập. Ảnh sẽ được nén khoảng dưới 150KB trước khi lưu để tăng tốc độ upload.
     </div>
 
     <input type="file" accept="image/*" id="camera" />
@@ -358,6 +261,9 @@
     <input id="teacher" placeholder="Tên giáo viên" />
 
     <button id="submitBtn" onclick="submitData()">LƯU ẢNH</button>
+    <div class="save-warning">
+      Sau khi bấm Lưu, vui lòng chờ app báo thành công hoặc báo lỗi. Không bấm nhiều lần để tránh tạo dữ liệu trùng.
+    </div>
     <button class="secondary" type="button" onclick="resetFormKeepClass()">Làm trẻ tiếp theo</button>
     <div id="status" class="status"></div>
   </div>
@@ -366,7 +272,8 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbwdcuOxY4TWzEEOil4lOXUcG27l04c3RdD36bqVjIPu1LEv11YmvZge0Nakb5lpgsG2/exec';
-const TARGET_IMAGE_KB = 200;
+const TARGET_IMAGE_KB = 150;
+const TARGET_IMAGE_MAX_WIDTH = 760;
 
 const CRITERIA = {
   problem: {
@@ -435,6 +342,7 @@ let levels = { problem: '', team: '', highlight: '' };
 let imageBase64 = '';
 let imageKb = 0;
 let currentStudents = [];
+let isSubmitting = false;
 
 async function init() {
   setStatus('Đang tải dữ liệu...', 'ok');
@@ -462,15 +370,18 @@ async function init() {
 }
 
 function setMode(newMode) {
+  if (isSubmitting) {
+    setStatus('Đang lưu dữ liệu. Vui lòng không chuyển chế độ cho đến khi app báo xong.', 'ok');
+    return;
+  }
+
   mode = newMode;
 
   document.getElementById('photoModeBtn').classList.toggle('active', mode === 'photo');
   document.getElementById('evalModeBtn').classList.toggle('active', mode === 'evaluation');
-
   document.getElementById('evaluationPanel').classList.toggle('hidden', mode !== 'evaluation');
 
-  document.getElementById('submitBtn').innerText =
-    mode === 'photo' ? 'LƯU ẢNH CÁ NHÂN' : 'LƯU ĐÁNH GIÁ 3 TIÊU CHÍ';
+  setSubmitBusy(false);
 
   document.getElementById('imageTitle').innerText =
     mode === 'photo' ? '2. Ảnh cá nhân' : '2. Ảnh cá nhân nếu muốn bổ sung/thay thế';
@@ -487,10 +398,7 @@ function initBehaviorOptions() {
 function fillSelect(id, items) {
   const el = document.getElementById(id);
   el.innerHTML = '';
-
-  items.forEach(text => {
-    el.appendChild(new Option(text, text));
-  });
+  items.forEach(text => el.appendChild(new Option(text, text)));
 }
 
 function updateHighlightBehavior() {
@@ -622,7 +530,6 @@ document.querySelectorAll('.levelBtn').forEach(btn => {
 
 document.getElementById('camera').addEventListener('change', async function(e) {
   const file = e.target.files && e.target.files[0];
-
   if (!file) return;
 
   setStatus('Đang xử lý ảnh...', 'ok');
@@ -650,19 +557,19 @@ document.getElementById('camera').addEventListener('change', async function(e) {
 async function compressImageToTarget(file, targetKb) {
   const img = await loadImage(file);
 
-  let maxWidth = 900;
-  let quality = 0.78;
+  let maxWidth = TARGET_IMAGE_MAX_WIDTH;
+  let quality = 0.72;
   let result = '';
   let kb = Infinity;
 
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 10; i++) {
     result = drawCompressed(img, maxWidth, quality);
     kb = Math.round((result.length * 3 / 4) / 1024);
 
     if (kb <= targetKb) break;
 
-    if (quality > 0.5) {
-      quality -= 0.1;
+    if (quality > 0.45) {
+      quality -= 0.08;
     } else {
       maxWidth = Math.round(maxWidth * 0.82);
     }
@@ -705,7 +612,6 @@ function drawCompressed(img, maxWidth, quality) {
 function clearImage() {
   imageBase64 = '';
   imageKb = 0;
-
   document.getElementById('camera').value = '';
   document.getElementById('preview').src = '';
   document.getElementById('preview').style.display = 'none';
@@ -750,17 +656,29 @@ function buildObservations() {
   ];
 }
 
+function setSubmitBusy(isBusy, message) {
+  const submitBtn = document.getElementById('submitBtn');
+  isSubmitting = isBusy;
+  submitBtn.disabled = isBusy;
+
+  if (isBusy) {
+    submitBtn.innerText = message || 'ĐANG LƯU... KHÔNG BẤM LẠI';
+  } else {
+    submitBtn.innerText = mode === 'photo' ? 'LƯU ẢNH CÁ NHÂN' : 'LƯU ĐÁNH GIÁ 3 TIÊU CHÍ';
+  }
+}
+
 async function submitData() {
-  if (mode === 'photo') {
-    return submitPhoto();
+  if (isSubmitting) {
+    setStatus('Dữ liệu đang được lưu. Vui lòng không bấm lại, chờ thông báo thành công hoặc báo lỗi.', 'ok');
+    return;
   }
 
+  if (mode === 'photo') return submitPhoto();
   return submitEvaluation();
 }
 
 async function submitPhoto() {
-  const submitBtn = document.getElementById('submitBtn');
-
   const studentEl = document.getElementById('student');
   const selectedOpt = studentEl.options[studentEl.selectedIndex];
 
@@ -780,8 +698,8 @@ async function submitPhoto() {
     image_base64: imageBase64
   };
 
-  submitBtn.disabled = true;
-  setStatus('Đang lưu ảnh cá nhân...', 'ok');
+  setSubmitBusy(true, 'ĐANG LƯU ẢNH... KHÔNG BẤM LẠI');
+  setStatus('Đang lưu ảnh cá nhân. Vui lòng chờ, không bấm lưu nhiều lần...', 'ok');
 
   try {
     const res = await fetch(API_URL, {
@@ -791,24 +709,20 @@ async function submitPhoto() {
 
     const json = await res.json();
 
-    if (!json.ok) {
-      throw new Error(json.error || 'Không lưu được ảnh');
-    }
+    if (!json.ok) throw new Error(json.error || 'Không lưu được ảnh');
 
-    setStatus(`Đã lưu ảnh cá nhân. Mã ảnh: ${json.photo_id}`, 'ok');
+    setStatus(`Đã lưu ảnh cá nhân thành công. Mã ảnh: ${json.photo_id}. Có thể bấm 'Làm trẻ tiếp theo'.`, 'ok');
     localStorage.setItem('sunbot_teacher', teacher || '');
 
   } catch (err) {
     setStatus('Lỗi lưu ảnh: ' + err.message, 'err');
 
   } finally {
-    submitBtn.disabled = false;
+    setSubmitBusy(false);
   }
 }
 
 async function submitEvaluation() {
-  const submitBtn = document.getElementById('submitBtn');
-
   const studentEl = document.getElementById('student');
   const selectedOpt = studentEl.options[studentEl.selectedIndex];
 
@@ -838,8 +752,8 @@ async function submitEvaluation() {
     observations: buildObservations()
   };
 
-  submitBtn.disabled = true;
-  setStatus('Đang lưu đánh giá 3 tiêu chí...', 'ok');
+  setSubmitBusy(true, 'ĐANG LƯU ĐÁNH GIÁ... KHÔNG BẤM LẠI');
+  setStatus('Đang lưu đánh giá 3 tiêu chí. Vui lòng chờ, không bấm lưu nhiều lần...', 'ok');
 
   try {
     const res = await fetch(API_URL, {
@@ -849,22 +763,25 @@ async function submitEvaluation() {
 
     const json = await res.json();
 
-    if (!json.ok) {
-      throw new Error(json.error || 'Không lưu được dữ liệu');
-    }
+    if (!json.ok) throw new Error(json.error || 'Không lưu được dữ liệu');
 
-    setStatus(`Đã lưu thành công ${json.saved_count} tiêu chí.`, 'ok');
+    setStatus(`Đã lưu thành công ${json.saved_count} tiêu chí. Có thể bấm 'Làm trẻ tiếp theo'.`, 'ok');
     localStorage.setItem('sunbot_teacher', teacher || '');
 
   } catch (err) {
     setStatus('Lỗi lưu đánh giá: ' + err.message, 'err');
 
   } finally {
-    submitBtn.disabled = false;
+    setSubmitBusy(false);
   }
 }
 
 function resetFormKeepClass() {
+  if (isSubmitting) {
+    setStatus('Đang lưu dữ liệu. Vui lòng chờ xong rồi mới chuyển trẻ.', 'ok');
+    return;
+  }
+
   document.getElementById('search').value = '';
   loadStudents();
 
