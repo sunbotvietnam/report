@@ -106,6 +106,32 @@
   .small { font-size: 12px; color: var(--muted); }
   .hidden { display: none; }
 
+  .photoActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .photoActions button {
+    margin-top: 0;
+  }
+
+  .photoActions .cameraBtn {
+    background: var(--orange);
+    color: #fff;
+  }
+
+  .photoActions .libraryBtn {
+    background: #fff;
+    color: var(--dark);
+    border: 1px solid var(--border);
+  }
+
+  @media(max-width: 420px) {
+    .photoActions { grid-template-columns: 1fr; }
+  }
+
   .save-warning {
     margin-top: 8px;
     padding: 9px 10px;
@@ -123,7 +149,7 @@
 <div class="wrap">
 
   <h1>Sunbot – Ảnh & Đánh giá cuối năm</h1>
-  <div class="sub">Một app, hai chế độ: bổ sung ảnh cá nhân hoặc đánh giá 3 tiêu chí.</div>
+  <div class="sub">Bổ sung ảnh cá nhân hoặc đánh giá 3 tiêu chí.</div>
 
   <div class="card">
     <b>0. Chọn chế độ</b>
@@ -162,10 +188,16 @@
     <b id="imageTitle">2. Ảnh cá nhân</b>
 
     <div class="small">
-      Có thể chụp ảnh mới hoặc chọn ảnh từ bộ sưu tập. Ảnh sẽ được nén khoảng dưới 150KB trước khi lưu để tăng tốc độ upload.
+      Có thể chụp ảnh trực tiếp tại lớp hoặc chọn ảnh có sẵn từ máy. Ảnh sẽ được nén khoảng dưới 150KB trước khi lưu để tăng tốc độ upload.
     </div>
 
-    <input type="file" accept="image/*" id="camera" />
+    <div class="photoActions">
+      <button type="button" class="cameraBtn" onclick="triggerPhotoInput('camera')">Chụp ảnh ngay</button>
+      <button type="button" class="libraryBtn" onclick="triggerPhotoInput('library')">Chọn ảnh từ máy</button>
+    </div>
+
+    <input type="file" accept="image/*" capture="environment" id="cameraCapture" class="hidden" />
+    <input type="file" accept="image/*" id="cameraLibrary" class="hidden" />
 
     <div style="margin-top:10px;">
       <img id="preview" alt="Ảnh preview" style="display:none;" />
@@ -528,7 +560,18 @@ document.querySelectorAll('.levelBtn').forEach(btn => {
   });
 });
 
-document.getElementById('camera').addEventListener('change', async function(e) {
+function triggerPhotoInput(source) {
+  if (isSubmitting) {
+    setStatus('Đang lưu dữ liệu. Vui lòng chờ app báo xong rồi mới chọn/chụp ảnh khác.', 'ok');
+    return;
+  }
+
+  const inputId = source === 'camera' ? 'cameraCapture' : 'cameraLibrary';
+  const input = document.getElementById(inputId);
+  if (input) input.click();
+}
+
+async function handleSelectedImageFile(e) {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
 
@@ -551,8 +594,14 @@ document.getElementById('camera').addEventListener('change', async function(e) {
 
   } catch (err) {
     setStatus('Lỗi xử lý ảnh: ' + err.message, 'err');
+  } finally {
+    // Cho phép chọn lại cùng một ảnh hoặc chụp lại cùng tên file ở lần sau.
+    e.target.value = '';
   }
-});
+}
+
+document.getElementById('cameraCapture').addEventListener('change', handleSelectedImageFile);
+document.getElementById('cameraLibrary').addEventListener('change', handleSelectedImageFile);
 
 async function compressImageToTarget(file, targetKb) {
   const img = await loadImage(file);
@@ -612,7 +661,8 @@ function drawCompressed(img, maxWidth, quality) {
 function clearImage() {
   imageBase64 = '';
   imageKb = 0;
-  document.getElementById('camera').value = '';
+  document.getElementById('cameraCapture').value = '';
+  document.getElementById('cameraLibrary').value = '';
   document.getElementById('preview').src = '';
   document.getElementById('preview').style.display = 'none';
   document.getElementById('imageInfo').innerText = '';
