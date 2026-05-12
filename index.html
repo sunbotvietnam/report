@@ -35,17 +35,17 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 14px;
-    margin: 10px 0;
+    padding: 12px;
+    margin: 8px 0;
     box-shadow: 0 2px 8px rgba(0,0,0,.04);
   }
 
-  label { display: block; font-weight: 700; font-size: 13px; margin-top: 10px; }
+  label { display: block; font-weight: 700; font-size: 12px; margin-top: 8px; }
 
   select, input, textarea, button {
     width: 100%;
-    padding: 11px 12px;
-    margin-top: 6px;
+    padding: 10px 11px;
+    margin-top: 5px;
     border-radius: 10px;
     border: 1px solid var(--border);
     font-size: 16px;
@@ -59,7 +59,7 @@
   button.ghost { background: #fff; color: var(--dark); border: 1px solid var(--border); }
   button:disabled { opacity: .55; cursor: not-allowed; }
 
-  .modeGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modeGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .modeBtn { background: #fff; color: var(--dark); border: 1px solid var(--border); }
   .modeBtn.active { background: var(--orange); color: #fff; border-color: var(--orange); }
 
@@ -73,7 +73,7 @@
     background: #fff3e6;
     color: #9a4b00;
     font-size: 12px;
-    margin-top: 6px;
+    margin-top: 5px;
   }
 
   .criteriaBox {
@@ -149,85 +149,115 @@
 <div class="wrap">
 
   <h1>Sunbot – Ảnh & Đánh giá cuối năm</h1>
-  <div class="sub">Bổ sung ảnh cá nhân hoặc đánh giá 3 tiêu chí.</div>
+  <div class="sub">Lưu ảnh, đánh giá tiêu chí và xem lại dữ liệu cá nhân.</div>
 
-  <div class="card">
-    <b>0. Chọn chế độ</b>
+  <div id="topLoading" class="card" style="border-color:#fed7aa;background:#fff7ed;">
+    <b>Đang tải dữ liệu...</b>
+    <div id="topLoadingText" class="miniHint" style="margin-top:4px;color:#9a3412;">Hệ thống đang chuẩn bị danh sách.</div>
+  </div>
+
+  <div class="card compactCard">
+    <b>Chọn tác vụ</b>
     <div class="modeGrid">
-      <button type="button" id="photoModeBtn" class="modeBtn active" onclick="setMode('photo')">Bổ sung ảnh cá nhân</button>
-      <button type="button" id="evalModeBtn" class="modeBtn" onclick="setMode('evaluation')">Đánh giá cuối năm</button>
+      <button type="button" id="photoModeBtn" class="modeBtn active" onclick="setMode('photo')">Ảnh</button>
+      <button type="button" id="evalModeBtn" class="modeBtn" onclick="setMode('evaluation')">Đánh giá</button>
+      <button type="button" id="myModeBtn" class="modeBtn" onclick="setMode('my')">Của tôi</button>
     </div>
   </div>
 
-  <div class="card">
-    <b>1. Chọn trẻ</b>
+  <div class="card workPanel compactCard" id="teacherTopCard">
+    <select id="teacher" aria-label="Chọn giáo viên">
+      <option value="">Chọn giáo viên</option>
+    </select>
+  </div>
 
-    <div class="row">
-      <div>
-        <label>Trường</label>
-        <select id="school"></select>
-      </div>
+  <div id="receiptBox" class="card hidden" style="border-color:#bbf7d0;background:#f0fdf4;">
+    <b style="color:#166534;">Đã ghi nhận dữ liệu</b>
+    <div id="receiptText" class="small" style="margin-top:6px;color:#166534;"></div>
+    <div class="row" style="margin-top:10px;">
+      <button type="button" onclick="sendAssessmentReceiptFromCurrent()">Gửi biên nhận email</button>
+      <button type="button" class="ghost" onclick="closeReceiptBox()">Đóng</button>
+    </div>
+  </div>
 
-      <div>
-        <label>Lớp</label>
-        <select id="className"></select>
-      </div>
+  <div id="myAssessmentPanel" class="card hidden compactCard">
+    <div class="sectionTitle"><span>Đánh giá của tôi</span></div>
+    <div class="miniHint">Nhập mã PIN cá nhân để xem lại ảnh và đánh giá đã lưu. Email chỉ gửi tổng quan, không gửi chi tiết từng trẻ.</div>
+
+    <div class="compactGrid" style="margin-top:8px;">
+      <select id="myTeacherSelect"></select>
+      <input id="myPin" type="password" inputmode="numeric" placeholder="Mã PIN" />
     </div>
 
-    <label>Tìm tên trẻ</label>
-    <input id="search" placeholder="Gõ vài chữ trong tên trẻ..." />
+    <div class="compactGrid">
+      <select id="myPeriod">
+        <option value="today">Hôm nay</option>
+        <option value="week">Tuần này</option>
+        <option value="month" selected>Tháng này</option>
+      </select>
+      <button type="button" onclick="loadMyAssessments()">Xem</button>
+    </div>
+    <button type="button" class="secondary" onclick="sendMyAssessmentEmail()">Gửi email tổng quan</button>
 
-    <label>Trẻ</label>
-    <select id="student"></select>
+    <div id="myAssessmentResult" style="margin-top:10px;"></div>
+  </div>
 
-    <div id="selectedInfo" class="pill">Chưa chọn trẻ</div>
+  <div class="card workPanel compactCard">
+    <div class="sectionTitle"><span>Chọn trẻ</span></div>
+    <div id="recentContextHint" class="hidden"></div>
+
+    <div class="compactGrid">
+      <select id="school" aria-label="Chọn trường"></select>
+      <select id="className" aria-label="Chọn lớp"></select>
+    </div>
+
+    <div class="compactGrid">
+      <input id="search" placeholder="Tìm tên trẻ..." />
+      <select id="student" aria-label="Chọn trẻ"></select>
+    </div>
+
+    <div id="selectedInfo" class="studentPill">Chưa chọn trẻ</div>
     <div id="ageInfo" class="small"></div>
   </div>
 
-  <div class="card">
-    <b id="imageTitle">2. Ảnh cá nhân</b>
-
-    <div class="small">
-      Có thể chụp ảnh trực tiếp tại lớp hoặc chọn ảnh có sẵn từ máy. Ảnh sẽ được nén khoảng dưới 150KB trước khi lưu để tăng tốc độ upload.
-    </div>
+  <div class="card workPanel compactCard">
+    <div class="sectionTitle"><span id="imageTitle">Ảnh cá nhân</span></div>
+    <div class="miniHint">Chụp ảnh hoặc chọn ảnh có sẵn.</div>
 
     <div class="photoActions">
-      <button type="button" class="cameraBtn" onclick="triggerPhotoInput('camera')">Chụp ảnh ngay</button>
-      <button type="button" class="libraryBtn" onclick="triggerPhotoInput('library')">Chọn ảnh từ máy</button>
+      <button type="button" class="cameraBtn" onclick="triggerPhotoInput('camera')">Chụp ảnh</button>
+      <button type="button" class="libraryBtn" onclick="triggerPhotoInput('library')">Chọn ảnh</button>
     </div>
 
     <input type="file" accept="image/*" capture="environment" id="cameraCapture" class="hidden" />
     <input type="file" accept="image/*" id="cameraLibrary" class="hidden" />
 
-    <div style="margin-top:10px;">
+    <div style="margin-top:8px;">
       <img id="preview" alt="Ảnh preview" style="display:none;" />
     </div>
 
     <div id="imageInfo" class="small"></div>
-
-    <button class="ghost" type="button" onclick="clearImage()">Xóa ảnh chọn lại</button>
+    <button class="ghost" type="button" onclick="clearImage()">Xóa ảnh</button>
   </div>
 
   <div id="evaluationPanel" class="hidden">
 
-    <div class="card">
-      <b>3. Thông tin đánh giá</b>
-
-      <label>Chặng</label>
-      <input id="stage" placeholder="Ví dụ: Cuối năm 2025-2026" />
-
-      <label>Bối cảnh quan sát</label>
-      <select id="context">
-        <option value="Robot">Robot</option>
-        <option value="STEAM">STEAM</option>
-        <option value="Ngày hội">Ngày hội</option>
-        <option value="Hoạt động nhóm">Hoạt động nhóm</option>
-        <option value="Check cuối năm">Check cuối năm</option>
-      </select>
+    <div class="card compactCard">
+      <div class="sectionTitle"><span>Thông tin đánh giá</span></div>
+      <div class="compactGrid">
+        <input id="stage" placeholder="Chặng: Cuối năm 2025-2026" />
+        <select id="context" aria-label="Bối cảnh quan sát">
+          <option value="Robot">Robot</option>
+          <option value="STEAM">STEAM</option>
+          <option value="Ngày hội">Ngày hội</option>
+          <option value="Hoạt động nhóm">Hoạt động nhóm</option>
+          <option value="Check cuối năm">Check cuối năm</option>
+        </select>
+      </div>
     </div>
 
-    <div class="card">
-      <b>4. Tiêu chí đánh giá</b>
+    <div class="card compactCard">
+      <div class="sectionTitle"><span>Tiêu chí đánh giá</span><span class="miniHint">Chọn mức 1–4</span></div>
 
       <div class="criteriaBox" data-criteria="problem">
         <div class="criteriaTitle">Tiêu chí 1 – Thử sai và giải quyết vấn đề</div>
@@ -240,9 +270,8 @@
           <button type="button" class="levelBtn" data-box="problem" data-level="4">4</button>
         </div>
 
-        <label>Biểu hiện quan sát được</label>
-        <select id="problemBehavior"></select>
-        <textarea id="problemCustom" placeholder="Có thể sửa/thêm chi tiết nếu cần..."></textarea>
+        <select id="problemBehavior" aria-label="Biểu hiện quan sát được"></select>
+        <textarea id="problemCustom" placeholder="Sửa/thêm biểu hiện nếu cần..."></textarea>
       </div>
 
       <div class="criteriaBox" data-criteria="team">
@@ -256,17 +285,15 @@
           <button type="button" class="levelBtn" data-box="team" data-level="4">4</button>
         </div>
 
-        <label>Biểu hiện quan sát được</label>
-        <select id="teamBehavior"></select>
-        <textarea id="teamCustom" placeholder="Có thể sửa/thêm chi tiết nếu cần..."></textarea>
+        <select id="teamBehavior" aria-label="Biểu hiện quan sát được"></select>
+        <textarea id="teamCustom" placeholder="Sửa/thêm biểu hiện nếu cần..."></textarea>
       </div>
 
       <div class="criteriaBox" data-criteria="highlight">
         <div class="criteriaTitle">Tiêu chí 3 – Điểm nổi bật Sunbot</div>
         <div class="small">Chọn 1 năng lực nổi bật nhất của trẻ.</div>
 
-        <label>Chọn điểm nổi bật</label>
-        <select id="highlightIndicator">
+        <select id="highlightIndicator" aria-label="Chọn điểm nổi bật">
           <option value="ROB-SEQ-01">Tư duy trình tự và điều hướng</option>
           <option value="EXPLORE-01">Quan sát và khám phá</option>
           <option value="CREATE-01">Sáng tạo và tạo sản phẩm</option>
@@ -280,22 +307,16 @@
           <button type="button" class="levelBtn" data-box="highlight" data-level="4">4</button>
         </div>
 
-        <label>Biểu hiện quan sát được</label>
-        <select id="highlightBehavior"></select>
-        <textarea id="highlightCustom" placeholder="Có thể sửa/thêm chi tiết nếu cần..."></textarea>
+        <select id="highlightBehavior" aria-label="Biểu hiện quan sát được"></select>
+        <textarea id="highlightCustom" placeholder="Sửa/thêm biểu hiện nếu cần..."></textarea>
       </div>
     </div>
 
   </div>
 
-  <div class="card">
-    <label>Giáo viên</label>
-    <input id="teacher" placeholder="Tên giáo viên" />
-
+  <div class="card workPanel compactCard stickySubmit">
     <button id="submitBtn" onclick="submitData()">LƯU ẢNH</button>
-    <div class="save-warning">
-      Sau khi bấm Lưu, vui lòng chờ app báo thành công hoặc báo lỗi. Không bấm nhiều lần để tránh tạo dữ liệu trùng.
-    </div>
+    <div class="miniHint save-warning">Chờ app báo thành công rồi mới bấm tiếp để tránh tạo dữ liệu trùng.</div>
     <button class="secondary" type="button" onclick="resetFormKeepClass()">Làm trẻ tiếp theo</button>
     <div id="status" class="status"></div>
   </div>
@@ -303,7 +324,10 @@
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbwdcuOxY4TWzEEOil4lOXUcG27l04c3RdD36bqVjIPu1LEv11YmvZge0Nakb5lpgsG2/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzJJeyMTNGy7yrKgJEAo9V_vRmCAg-kdc9xhAYXUAFePu14Eo5nFYeg_qIvBTYgAWFn/exec';
+// Nếu chị đã dán Assessment Support Patch vào cùng Apps Script, giữ SUPPORT_API_URL = API_URL.
+// Nếu deploy riêng support endpoint, thay bằng URL Web App support.
+const SUPPORT_API_URL = API_URL;
 const TARGET_IMAGE_KB = 150;
 const TARGET_IMAGE_MAX_WIDTH = 760;
 
@@ -375,29 +399,92 @@ let imageBase64 = '';
 let imageKb = 0;
 let currentStudents = [];
 let isSubmitting = false;
+let SUPPORT_CONFIG = { teachers: [] };
+let LAST_RECEIPT_PERIOD = 'today';
+const CACHE_DATA_KEY = 'sunbot_assessment_enrollment_cache_v3';
+const CACHE_SUPPORT_KEY = 'sunbot_assessment_support_cache_v3';
 
 async function init() {
+  showTopLoading(true, 'Đang tải dữ liệu. Nếu mạng chậm, app sẽ dùng dữ liệu đã lưu gần nhất trước.');
   setStatus('Đang tải dữ liệu...', 'ok');
 
   try {
-    const res = await fetch(API_URL + '?action=data');
-    const json = await res.json();
-
-    if (!json.ok) throw new Error(json.error || 'Không tải được dữ liệu');
-
-    DATA = json.enrollment || {};
-
-    document.getElementById('stage').value =
-      (json.config && json.config.defaultStage) || 'Cuối năm 2025-2026';
-
     initBehaviorOptions();
-    loadSchools();
+
+    // 1. Dùng cache trước để giáo viên thấy dữ liệu nhanh hơn.
+    loadCachedDataIfAny();
+    loadCachedSupportIfAny();
+
+    // 2. Tải dữ liệu mới song song.
+    const dataPromise = fetch(API_URL + '?action=data')
+      .then(res => res.json())
+      .then(json => {
+        if (!json.ok) throw new Error(json.error || 'Không tải được dữ liệu trẻ');
+        DATA = json.enrollment || {};
+        localStorage.setItem(CACHE_DATA_KEY, JSON.stringify({ enrollment: DATA, config: json.config || {}, cached_at: Date.now() }));
+        document.getElementById('stage').value = (json.config && json.config.defaultStage) || document.getElementById('stage').value || 'Cuối năm 2025-2026';
+        loadSchools();
+        restoreLastContext();
+        renderRecentSuggestions();
+      });
+
+    const supportPromise = loadSupportConfig();
+
+    await Promise.allSettled([dataPromise, supportPromise]);
+
+    if (!Object.keys(DATA || {}).length) {
+      throw new Error('Chưa có dữ liệu trường/lớp/trẻ.');
+    }
+
     restoreLastContext();
+    renderRecentSuggestions();
     setMode('photo');
     clearStatus();
+    showTopLoading(false);
 
   } catch (err) {
+    showTopLoading(true, 'Lỗi tải dữ liệu: ' + err.message);
     setStatus('Lỗi tải dữ liệu: ' + err.message, 'err');
+  }
+}
+
+
+function showTopLoading(on, text) {
+  const box = document.getElementById('topLoading');
+  const textEl = document.getElementById('topLoadingText');
+  if (!box || !textEl) return;
+  textEl.innerText = text || 'Vui lòng chờ hệ thống tải dữ liệu...';
+  box.classList.toggle('hidden', !on);
+}
+
+function loadCachedDataIfAny() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_DATA_KEY) || '{}');
+    if (cached.enrollment && Object.keys(cached.enrollment).length) {
+      DATA = cached.enrollment;
+      if (cached.config && cached.config.defaultStage) {
+        document.getElementById('stage').value = cached.config.defaultStage;
+      }
+      loadSchools();
+      restoreLastContext();
+      renderRecentSuggestions();
+      showTopLoading(true, 'Đang dùng dữ liệu đã lưu gần nhất, hệ thống tiếp tục cập nhật dữ liệu mới...');
+    }
+  } catch (err) {
+    console.warn('Không đọc được cache dữ liệu trẻ:', err);
+  }
+}
+
+function loadCachedSupportIfAny() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_SUPPORT_KEY) || '{}');
+    if (cached.teachers && cached.teachers.length) {
+      SUPPORT_CONFIG = cached;
+      renderSupportTeachers();
+      renderRecentSuggestions();
+    }
+  } catch (err) {
+    console.warn('Không đọc được cache giáo viên:', err);
   }
 }
 
@@ -411,12 +498,19 @@ function setMode(newMode) {
 
   document.getElementById('photoModeBtn').classList.toggle('active', mode === 'photo');
   document.getElementById('evalModeBtn').classList.toggle('active', mode === 'evaluation');
+  document.getElementById('myModeBtn').classList.toggle('active', mode === 'my');
+
+  document.querySelectorAll('.workPanel').forEach(el => {
+    el.classList.toggle('hidden', mode === 'my');
+  });
+
   document.getElementById('evaluationPanel').classList.toggle('hidden', mode !== 'evaluation');
+  document.getElementById('myAssessmentPanel').classList.toggle('hidden', mode !== 'my');
 
   setSubmitBusy(false);
 
   document.getElementById('imageTitle').innerText =
-    mode === 'photo' ? '2. Ảnh cá nhân' : '2. Ảnh cá nhân nếu muốn bổ sung/thay thế';
+    mode === 'photo' ? 'Ảnh cá nhân' : 'Ảnh cá nhân nếu muốn bổ sung/thay thế';
 
   clearStatus();
 }
@@ -440,36 +534,52 @@ function updateHighlightBehavior() {
 
 function loadSchools() {
   const el = document.getElementById('school');
-  el.innerHTML = '';
+  const oldValue = el.value || localStorage.getItem('sunbot_school') || '';
+  el.innerHTML = '<option value="">Chọn trường</option>';
 
   Object.keys(DATA)
     .sort((a, b) => a.localeCompare(b, 'vi'))
     .forEach(school => el.appendChild(new Option(school, school)));
+
+  if (oldValue && DATA[oldValue]) el.value = oldValue;
 
   loadClasses();
 }
 
 function loadClasses() {
   const school = document.getElementById('school').value;
-  localStorage.setItem('sunbot_school', school || '');
+  if (school) localStorage.setItem('sunbot_school', school || '');
 
+  const storedClass = localStorage.getItem('sunbot_class') || '';
+  const currentClass = document.getElementById('className').value || '';
   const el = document.getElementById('className');
-  el.innerHTML = '';
+  el.innerHTML = '<option value="">Chọn lớp</option>';
 
-  if (!school || !DATA[school]) return;
+  if (!school || !DATA[school]) {
+    renderStudents([]);
+    renderRecentSuggestions();
+    return;
+  }
 
   Object.keys(DATA[school])
     .sort((a, b) => a.localeCompare(b, 'vi'))
     .forEach(cls => el.appendChild(new Option(cls, cls)));
 
+  if (currentClass && DATA[school][currentClass]) {
+    el.value = currentClass;
+  } else if (storedClass && DATA[school][storedClass]) {
+    el.value = storedClass;
+  }
+
   loadStudents();
+  renderRecentSuggestions();
 }
 
 function loadStudents() {
   const school = document.getElementById('school').value;
   const cls = document.getElementById('className').value;
 
-  localStorage.setItem('sunbot_class', cls || '');
+  if (cls) localStorage.setItem('sunbot_class', cls || '');
 
   currentStudents =
     school && cls && DATA[school] && DATA[school][cls]
@@ -477,17 +587,19 @@ function loadStudents() {
       : [];
 
   renderStudents(currentStudents);
+  renderRecentSuggestions();
 }
 
 function renderStudents(list) {
   const el = document.getElementById('student');
-  el.innerHTML = '';
+  el.innerHTML = '<option value="">Chọn trẻ</option>';
 
   list.forEach(st => {
-    const opt = new Option(`${st.name} (${st.child_id})`, st.child_id);
+    const opt = new Option(`${st.name}`, st.child_id);
     opt.dataset.enrollmentId = st.enrollment_id || '';
     opt.dataset.name = st.name || '';
     opt.dataset.ageGroup = st.age_group || 'NA';
+    opt.dataset.childId = st.child_id || '';
     el.appendChild(opt);
   });
 
@@ -498,25 +610,77 @@ function updateSelectedInfo() {
   const el = document.getElementById('student');
   const opt = el.options[el.selectedIndex];
 
-  if (!opt) {
+  if (!opt || !el.value) {
     document.getElementById('selectedInfo').innerText = 'Chưa chọn trẻ';
     document.getElementById('ageInfo').innerText = '';
     return;
   }
 
   document.getElementById('selectedInfo').innerText =
-    `Đang chọn: ${opt.dataset.name || ''} – ${opt.value}`;
+    `${opt.dataset.name || ''} · ${opt.value}`;
 
   document.getElementById('ageInfo').innerText =
     `Khối tuổi Sunbot: ${opt.dataset.ageGroup || 'NA'}`;
+}
+
+
+function renderRecentSuggestions() {
+  // App tự động nhớ giáo viên, trường, lớp, bối cảnh và chặng gần nhất.
+  // Không hiển thị hướng dẫn dài để giữ giao diện gọn.
+}
+
+function applyRecentTeacher() {
+  const teacher = localStorage.getItem('sunbot_teacher') || '';
+  if (!teacher) return;
+  const el = document.getElementById('teacher');
+  if (el) el.value = teacher;
+}
+
+function applyRecentSchool() {
+  const school = localStorage.getItem('sunbot_school') || '';
+  if (!school || !DATA[school]) return;
+  document.getElementById('school').value = school;
+  loadClasses();
+}
+
+function applyRecentClass() {
+  applyRecentSchool();
+  const school = document.getElementById('school').value;
+  const cls = localStorage.getItem('sunbot_class') || '';
+  if (school && cls && DATA[school] && DATA[school][cls]) {
+    document.getElementById('className').value = cls;
+    loadStudents();
+  }
+}
+
+function applyRecentContext() {
+  const context = localStorage.getItem('sunbot_context') || '';
+  if (context) document.getElementById('context').value = context;
+}
+
+function applyRecentStage() {
+  const stage = localStorage.getItem('sunbot_stage') || '';
+  if (stage) document.getElementById('stage').value = stage;
 }
 
 function restoreLastContext() {
   const school = localStorage.getItem('sunbot_school');
   const cls = localStorage.getItem('sunbot_class');
   const teacher = localStorage.getItem('sunbot_teacher');
+  const context = localStorage.getItem('sunbot_context');
+  const stage = localStorage.getItem('sunbot_stage');
 
-  if (teacher) document.getElementById('teacher').value = teacher;
+  if (teacher && document.getElementById('teacher')) {
+    document.getElementById('teacher').value = teacher;
+  }
+
+  if (stage && document.getElementById('stage')) {
+    document.getElementById('stage').value = stage;
+  }
+
+  if (context && document.getElementById('context')) {
+    document.getElementById('context').value = context;
+  }
 
   if (school && DATA[school]) {
     document.getElementById('school').value = school;
@@ -527,11 +691,16 @@ function restoreLastContext() {
       loadStudents();
     }
   }
+
+  renderRecentSuggestions();
 }
 
 document.getElementById('school').addEventListener('change', loadClasses);
 document.getElementById('className').addEventListener('change', loadStudents);
 document.getElementById('student').addEventListener('change', updateSelectedInfo);
+document.getElementById('teacher').addEventListener('change', function(){ localStorage.setItem('sunbot_teacher', this.value || ''); renderRecentSuggestions(); });
+document.getElementById('context').addEventListener('change', function(){ localStorage.setItem('sunbot_context', this.value || ''); renderRecentSuggestions(); });
+document.getElementById('stage').addEventListener('input', function(){ localStorage.setItem('sunbot_stage', this.value || ''); renderRecentSuggestions(); });
 document.getElementById('highlightIndicator').addEventListener('change', updateHighlightBehavior);
 
 document.getElementById('search').addEventListener('input', function() {
@@ -718,6 +887,234 @@ function setSubmitBusy(isBusy, message) {
   }
 }
 
+
+async function loadSupportConfig() {
+  try {
+    showTopLoading(true, 'Đang tải danh sách giáo viên...');
+    const res = await fetch(SUPPORT_API_URL + '?action=support_config');
+    const json = await res.json();
+    if (json.status !== 'success' && !json.ok) throw new Error(json.message || json.error || 'Không tải được REF_TEACHERS');
+    SUPPORT_CONFIG = json.result || json;
+    localStorage.setItem(CACHE_SUPPORT_KEY, JSON.stringify(SUPPORT_CONFIG));
+    renderSupportTeachers();
+    renderRecentSuggestions();
+  } catch (err) {
+    // Không chặn app đánh giá chính nếu phần support lỗi.
+    console.warn('Không tải được support config:', err);
+    renderSupportTeachers();
+  }
+}
+
+function renderSupportTeachers() {
+  const teacherMain = document.getElementById('teacher');
+  const teacherMine = document.getElementById('myTeacherSelect');
+
+  if (teacherMain) {
+    const oldValue = teacherMain.value;
+    teacherMain.innerHTML = '<option value="">Chọn giáo viên</option>';
+    (SUPPORT_CONFIG.teachers || []).forEach(t => {
+      const opt = new Option(t.teacher_name || t.teacher_id, t.teacher_name || t.teacher_id);
+      opt.dataset.teacherId = t.teacher_id || '';
+      opt.dataset.teacherName = t.teacher_name || '';
+      teacherMain.appendChild(opt);
+    });
+    if (oldValue) teacherMain.value = oldValue;
+  }
+
+  if (teacherMine) {
+    const oldValue = teacherMine.value;
+    teacherMine.innerHTML = '<option value="">Chọn giáo viên/leader</option>';
+    (SUPPORT_CONFIG.teachers || []).forEach(t => {
+      const opt = new Option(t.teacher_name || t.teacher_id, t.teacher_id || t.teacher_name);
+      opt.dataset.teacherName = t.teacher_name || '';
+      teacherMine.appendChild(opt);
+    });
+    if (oldValue) teacherMine.value = oldValue;
+  }
+
+  const lastTeacher = localStorage.getItem('sunbot_teacher');
+  const matched = (SUPPORT_CONFIG.teachers || []).find(t => t.teacher_name === lastTeacher || t.teacher_id === lastTeacher);
+
+  if (matched) {
+    if (teacherMain) teacherMain.value = matched.teacher_name || matched.teacher_id;
+    if (teacherMine) teacherMine.value = matched.teacher_id || matched.teacher_name;
+  }
+
+  renderRecentSuggestions();
+}
+
+async function supportPost(action, data) {
+  if (!SUPPORT_API_URL || SUPPORT_API_URL.includes('PASTE_')) throw new Error('Chưa cấu hình SUPPORT_API_URL.');
+  const res = await fetch(SUPPORT_API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action, ...data })
+  });
+  const out = await res.json();
+  if (out.status !== 'success' && !out.ok) throw new Error(out.message || out.error || 'Không thành công.');
+  return out.result || out;
+}
+
+async function loadMyAssessments() {
+  try {
+    const teacher_id = document.getElementById('myTeacherSelect').value;
+    const teacher_pin = document.getElementById('myPin').value.trim();
+    const period = document.getElementById('myPeriod').value;
+
+    if (!teacher_id) throw new Error('Vui lòng chọn giáo viên/leader.');
+    if (!teacher_pin) throw new Error('Vui lòng nhập mã PIN.');
+
+    setStatus('Đang tải Đánh giá của tôi...', 'ok');
+
+    const result = await supportPost('get_my_assessments', { teacher_id, teacher_pin, period });
+    renderMyAssessmentResult(result);
+    clearStatus();
+
+  } catch (err) {
+    setStatus(err.message, 'err');
+  }
+}
+
+async function sendMyAssessmentEmail() {
+  try {
+    const teacher_id = document.getElementById('myTeacherSelect').value;
+    const teacher_pin = document.getElementById('myPin').value.trim();
+    const period = document.getElementById('myPeriod').value;
+
+    if (!teacher_id) throw new Error('Vui lòng chọn giáo viên/leader.');
+    if (!teacher_pin) throw new Error('Vui lòng nhập mã PIN.');
+
+    setStatus('Đang gửi email tổng quan đánh giá...', 'ok');
+
+    const result = await supportPost('send_assessment_receipt', { teacher_id, teacher_pin, period });
+    if (result.summary) renderMyAssessmentResult(result.summary);
+    setStatus('Đã gửi email tổng quan đánh giá.', 'ok');
+
+  } catch (err) {
+    setStatus(err.message, 'err');
+  }
+}
+
+async function sendAssessmentReceiptFromCurrent() {
+  try {
+    const teacherName = document.getElementById('teacher').value.trim();
+    const matched = (SUPPORT_CONFIG.teachers || []).find(t => t.teacher_name === teacherName || t.teacher_id === teacherName);
+    if (!matched) throw new Error('Không tìm thấy giáo viên trong REF_TEACHERS. Hãy vào "Đánh giá của tôi" để chọn tên và nhập PIN.');
+
+    const pin = prompt('Nhập mã PIN cá nhân để gửi biên nhận email:');
+    if (!pin) return;
+
+    const result = await supportPost('send_assessment_receipt', {
+      teacher_id: matched.teacher_id,
+      teacher_pin: pin,
+      period: LAST_RECEIPT_PERIOD || 'today'
+    });
+
+    setStatus('Đã gửi email tổng quan đánh giá.', 'ok');
+    if (result.summary) renderMyAssessmentResult(result.summary);
+
+  } catch (err) {
+    setStatus(err.message, 'err');
+  }
+}
+
+function renderMyAssessmentResult(data) {
+  const box = document.getElementById('myAssessmentResult');
+  if (!box) return;
+
+  const groups = data.groups || [];
+  const photos = data.photos || [];
+  const observations = data.recent_observations || [];
+
+  const summary = `
+    <div class="card" style="margin-top:0;">
+      <b>${escapeHtml(data.teacher_name || '')}</b>
+      <div class="small">${escapeHtml(data.period_label || '')}</div>
+      <div class="row" style="margin-top:10px;">
+        ${smallStat('Bản ghi', data.observation_count || 0)}
+        ${smallStat('Trẻ', data.child_count || 0)}
+      </div>
+      <div class="row">
+        ${smallStat('Ảnh', data.photo_count || 0)}
+        ${smallStat('Lớp', data.class_count || 0)}
+      </div>
+    </div>
+  `;
+
+  const groupHtml = groups.length ? `
+    <div class="card">
+      <b>Theo trường/lớp/bối cảnh</b>
+      ${groups.map(g => `
+        <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:10px;">
+          <div><b>${escapeHtml(g.school_name || '')}</b></div>
+          <div class="small">${escapeHtml(g.class_name || '')} · ${escapeHtml(g.context || '')} · ${formatViDate(g.date)}</div>
+          <div class="small">Trẻ: <b>${g.child_count}</b> · Bản ghi: <b>${g.observation_count}</b> · Tiêu chí: <b>${g.indicator_count}</b> · ${g.has_photo ? 'Có ảnh' : 'Chưa ảnh'}</div>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
+  const photoHtml = photos.length ? `
+    <div class="card">
+      <b>Ảnh đã lưu gần đây</b>
+      <div class="small">Chỉ hiển thị link ảnh theo dữ liệu PHOTO_LOG/OBSERVATION. Nếu link không mở được, báo leader/admin kiểm tra quyền chia sẻ Drive.</div>
+      ${photos.map(p => `
+        <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:10px;">
+          <div><b>${escapeHtml(p.child_name || p.child_id || 'Ảnh')}</b></div>
+          <div class="small">${escapeHtml(p.school_name || '')} · ${escapeHtml(p.class_name || '')} · ${formatViDate(p.date)}</div>
+          ${p.url ? `<a href="${escapeAttr(p.url)}" target="_blank"><button type="button" class="ghost">Xem ảnh</button></a>` : `<div class="small">Chưa có link ảnh.</div>`}
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
+  const obsHtml = observations.length ? `
+    <div class="card">
+      <b>Đánh giá đã làm gần đây</b>
+      <div class="small">Chi tiết này chỉ hiển thị trong app sau khi nhập PIN, không gửi qua email.</div>
+      ${observations.map(o => `
+        <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:10px;">
+          <div><b>${escapeHtml(o.child_name || o.child_id || '')}</b> · Mức ${escapeHtml(o.level || '')}</div>
+          <div class="small">${escapeHtml(o.indicator_code || '')} – ${escapeHtml(o.indicator_name || '')}</div>
+          <div class="small">${escapeHtml(o.behavior || '')}</div>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
+  box.innerHTML = summary + (groupHtml || '<div class="card small">Chưa có dữ liệu đánh giá trong kỳ này.</div>') + photoHtml + obsHtml;
+}
+
+function smallStat(label, value) {
+  return `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:20px;font-weight:800;color:#c2410c;">${escapeHtml(value)}</div><div class="small">${escapeHtml(label)}</div></div>`;
+}
+
+function showReceiptBox(text, period) {
+  LAST_RECEIPT_PERIOD = period || 'today';
+  document.getElementById('receiptText').innerText = text;
+  document.getElementById('receiptBox').classList.remove('hidden');
+}
+
+function closeReceiptBox() {
+  document.getElementById('receiptBox').classList.add('hidden');
+}
+
+function escapeHtml(value) {
+  return String(value === null || value === undefined ? '' : value)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value).replace(/'/g, '&#39;');
+}
+
+function formatViDate(iso) {
+  const p = String(iso || '').split('-');
+  return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : iso || '';
+}
+
 async function submitData() {
   if (isSubmitting) {
     setStatus('Dữ liệu đang được lưu. Vui lòng không bấm lại, chờ thông báo thành công hoặc báo lỗi.', 'ok');
@@ -762,7 +1159,9 @@ async function submitPhoto() {
     if (!json.ok) throw new Error(json.error || 'Không lưu được ảnh');
 
     setStatus(`Đã lưu ảnh cá nhân thành công. Mã ảnh: ${json.photo_id}. Có thể bấm 'Làm trẻ tiếp theo'.`, 'ok');
+    showReceiptBox(`Đã lưu ảnh cá nhân cho ${selectedOpt ? selectedOpt.dataset.name : childId}. Mã ảnh: ${json.photo_id}.`, 'today');
     localStorage.setItem('sunbot_teacher', teacher || '');
+    renderRecentSuggestions();
 
   } catch (err) {
     setStatus('Lỗi lưu ảnh: ' + err.message, 'err');
@@ -816,7 +1215,11 @@ async function submitEvaluation() {
     if (!json.ok) throw new Error(json.error || 'Không lưu được dữ liệu');
 
     setStatus(`Đã lưu thành công ${json.saved_count} tiêu chí. Có thể bấm 'Làm trẻ tiếp theo'.`, 'ok');
+    showReceiptBox(`Đã lưu ${json.saved_count} tiêu chí đánh giá cho ${selectedOpt ? selectedOpt.dataset.name : childId}.`, 'today');
     localStorage.setItem('sunbot_teacher', teacher || '');
+    localStorage.setItem('sunbot_context', context || '');
+    localStorage.setItem('sunbot_stage', stage || '');
+    renderRecentSuggestions();
 
   } catch (err) {
     setStatus('Lỗi lưu đánh giá: ' + err.message, 'err');
